@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#e07a5f">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="description" content="SafeFork - Alimentação segura para pessoas com alergias alimentares">
+  <title>SafeFork</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="assets/icons/icon-192x192.png">
+  <link rel="stylesheet" href="css/styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div id="app">
+    <!-- Toast -->
+    <div id="toast" class="toast"></div>
+
+    <!-- TELA LOGIN -->
+    <section id="tela-login" class="login-screen">
+      <div class="login-logo">🛡️</div>
+      <h1 class="logo-text" style="font-size:2.2rem; margin-bottom:4px;">SAFEFORK</h1>
+      <p>Alimentação segura e prazerosa para quem vive com alergias alimentares.</p>
+
+      <div style="width:100%; max-width:340px;">
+        <div id="login-form">
+          <div class="input-group">
+            <label>E-mail</label>
+            <input type="email" id="login-email" class="input" placeholder="seu@email.com" value="usuario@safefork.com">
+          </div>
+          <div class="input-group">
+            <label>Senha</label>
+            <input type="password" id="login-senha" class="input" placeholder="••••••" value="123456">
+          </div>
+          <button class="btn btn-primary btn-block" onclick="app.fazerLogin()" style="margin-top:8px;">
+            🔐 Entrar
+          </button>
+          <button class="btn btn-outline btn-block" onclick="app.mostrarCadastro()" style="margin-top:10px;">
+            ✨ Criar Conta
+          </button>
+        </div>
+
+        <div id="cadastro-form" style="display:none;">
+          <div class="input-group">
+            <label>Nome</label>
+            <input type="text" id="cad-nome" class="input" placeholder="Seu nome">
+          </div>
+          <div class="input-group">
+            <label>E-mail</label>
+            <input type="email" id="cad-email" class="input" placeholder="seu@email.com">
+          </div>
+          <div class="input-group">
+            <label>Senha</label>
+            <input type="password" id="cad-senha" class="input" placeholder="Mínimo 6 caracteres">
+          </div>
+          <button class="btn btn-primary btn-block" onclick="app.fazerCadastro()" style="margin-top:8px;">
+            ✅ Cadastrar
+          </button>
+          <button class="btn btn-ghost btn-block" onclick="app.mostrarLogin()" style="margin-top:10px;">
+            ← Voltar ao Login
+          </button>
+        </div>
+      </div>
+
+      <p class="text-xs opacity-60" style="margin-top:32px;">
+        Ao entrar, você concorda com nossos termos de privacidade e segurança de dados.
+      </p>
+    </section>
+
+    <!-- HEADER (visível após login) -->
+    <header id="app-header" class="app-header" style="display:none;">
+      <div class="logo">
+        <div class="logo-icon">🛡️</div>
+        <h1>SafeFork</h1>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-ghost" style="padding:8px 12px; min-height:40px;" onclick="app.irPara('notificacoes')">
+          🔔
+        </button>
+        <button class="btn btn-ghost" style="padding:8px 12px; min-height:40px;" onclick="app.irPara('configuracoes')">
+          ⚙️
+        </button>
+      </div>
+    </header>
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <main id="content" class="content-area" style="display:none;">
+
+      <!-- FEED / HOME -->
+      <section id="tela-feed" class="tela">
+        <div class="search-bar">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="busca-input" class="input" placeholder="Buscar receitas, ingredientes..." onkeyup="app.buscarReceitas(this.value)">
+        </div>
+
+        <div class="scroll-x" style="margin-bottom:16px;">
+          <button class="chip chip-categoria active" onclick="app.filtrarCategoria('todas', this)">Todas</button>
+          <button class="chip chip-categoria" onclick="app.filtrarCategoria('sem-gluten', this)">🌾 Sem Glúten</button>
+          <button class="chip chip-categoria" onclick="app.filtrarCategoria('sem-lactose', this)">🥛 Sem Lactose</button>
+          <button class="chip chip-categoria" onclick="app.filtrarCategoria('sem-nozes', this)">🥜 Sem Nozes</button>
+          <button class="chip chip-categoria" onclick="app.filtrarCategoria('vegano', this)">🌱 Vegano</button>
+          <button class="chip chip-categoria" onclick="app.filtrarCategoria('rapido', this)">⚡ Rápido</button>
+        </div>
+
+        <h2 class="section-title">📋 Receitas Seguras</h2>
+        <div id="feed-receitas"></div>
+      </section>
+
+      <!-- BUSCA AVANÇADA -->
+      <section id="tela-busca" class="tela" style="display:none;">
+        <h2 class="section-title">🔍 Busca Avançada</h2>
+
+        <div class="card">
+          <div class="input-group">
+            <label>Nome da receita ou ingrediente</label>
+            <input type="text" id="busca-avancada" class="input" placeholder="Ex: bolo de chocolate" onkeyup="app.buscaAvancada()">
+          </div>
+
+          <label style="font-size:0.85rem; font-weight:600; color:var(--rabanete); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:8px; display:block;">Filtrar por alergias</label>
+          <div class="chips-container" id="busca-alergias-chips"></div>
+
+          <label style="font-size:0.85rem; font-weight:600; color:var(--rabanete); text-transform:uppercase; letter-spacing:0.5px; margin:16px 0 8px; display:block;">Tempo de preparo</label>
+          <div class="chips-container">
+            <button class="chip chip-categoria" onclick="app.filtrarTempo(15, this)">Até 15 min</button>
+            <button class="chip chip-categoria" onclick="app.filtrarTempo(30, this)">Até 30 min</button>
+            <button class="chip chip-categoria" onclick="app.filtrarTempo(60, this)">Até 1h</button>
+            <button class="chip chip-categoria" onclick="app.filtrarTempo(0, this)">Qualquer</button>
+          </div>
+
+          <button class="btn btn-primary btn-block mt-4" onclick="app.buscaAvancada()">
+            🔍 Buscar
+          </button>
+        </div>
+
+        <h3 class="section-title" style="font-size:1.1rem; margin-top:20px;">Resultados</h3>
+        <div id="resultados-busca"></div>
+      </section>
+
+      <!-- DETALHE RECEITA -->
+      <section id="tela-receita" class="tela" style="display:none;">
+        <button class="btn btn-ghost mb-3" onclick="app.voltar()" style="padding:8px 14px;">
+          ← Voltar
+        </button>
+
+        <div id="receita-detalhe"></div>
+
+        <div class="card mt-3">
+          <h3 class="section-title" style="font-size:1.1rem;">💬 Comentários</h3>
+          <div id="receita-comentarios"></div>
+          <div class="flex gap-2 mt-3">
+            <input type="text" id="novo-comentario" class="input" placeholder="Adicione um comentário..." style="flex:1;">
+            <button class="btn btn-primary" onclick="app.adicionarComentario()" style="padding:14px 18px;">➤</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- PERFIL -->
+      <section id="tela-perfil" class="tela" style="display:none;">
+        <div class="card text-center">
+          <div class="avatar avatar-lg" style="margin:0 auto 12px;" id="perfil-avatar"></div>
+          <h2 id="perfil-nome" style="font-size:1.4rem;"></h2>
+          <p id="perfil-email" class="text-sm opacity-60"></p>
+          <p id="perfil-bio" class="mt-2" style="font-size:0.9rem; line-height:1.5;"></p>
+
+          <div class="flex flex-center gap-3 mt-3">
+            <div class="text-center">
+              <div class="font-titulo" style="font-size:1.4rem;" id="perfil-seguidores">0</div>
+              <div class="text-xs opacity-60">Seguidores</div>
+            </div>
+            <div class="text-center">
+              <div class="font-titulo" style="font-size:1.4rem;" id="perfil-seguindo">0</div>
+              <div class="text-xs opacity-60">Seguindo</div>
+            </div>
+            <div class="text-center">
+              <div class="font-titulo" style="font-size:1.4rem;" id="perfil-receitas">0</div>
+              <div class="text-xs opacity-60">Receitas</div>
+            </div>
+          </div>
+
+          <button class="btn btn-outline btn-block mt-3" onclick="app.irPara('editar-perfil')">
+            ✏️ Editar Perfil
+          </button>
+        </div>
+
+        <h3 class="section-title" style="font-size:1.1rem;">⚠️ Minhas Alergias</h3>
+        <div class="chips-container" id="perfil-alergias"></div>
+        <button class="btn btn-secondary btn-block" onclick="app.irPara('alergias')">
+          ➕ Gerenciar Alergias
+        </button>
+
+        <h3 class="section-title" style="font-size:1.1rem; margin-top:20px;">🍽️ Minhas Receitas</h3>
+        <div id="perfil-minhas-receitas"></div>
+      </section>
+
+      <!-- EDITAR PERFIL -->
+      <section id="tela-editar-perfil" class="tela" style="display:none;">
+        <h2 class="section-title">✏️ Editar Perfil</h2>
+        <div class="card">
+          <div class="input-group">
+            <label>Nome</label>
+            <input type="text" id="edit-nome" class="input">
+          </div>
+          <div class="input-group">
+            <label>Bio</label>
+            <textarea id="edit-bio" class="input" rows="3" placeholder="Conte um pouco sobre você..."></textarea>
+          </div>
+          <button class="btn btn-primary btn-block" onclick="app.salvarPerfil()">💾 Salvar</button>
+        </div>
+      </section>
+
+      <!-- ALERGIAS -->
+      <section id="tela-alergias" class="tela" style="display:none;">
+        <h2 class="section-title">⚠️ Preferências e Alergias</h2>
+        <p class="text-sm opacity-60 mb-3">Selecione suas alergias para filtrar receitas automaticamente.</p>
+
+        <div class="card">
+          <h3 style="font-size:1rem; margin-bottom:12px;">Alergias Cadastradas</h3>
+          <div class="chips-container" id="lista-alergias"></div>
+
+          <div class="input-group mt-3">
+            <label>Adicionar nova alergia</label>
+            <div class="flex gap-2">
+              <input type="text" id="nova-alergia" class="input" placeholder="Ex: Frutos do mar" style="flex:1;">
+              <button class="btn btn-primary" onclick="app.adicionarAlergia()" style="padding:14px 18px;">➕</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card mt-3">
+          <h3 style="font-size:1rem; margin-bottom:12px;">Tags de Risco</h3>
+          <p class="text-sm opacity-60 mb-2">Receitas com estes ingredientes serão sinalizadas.</p>
+          <div class="chips-container" id="tags-risco"></div>
+        </div>
+      </section>
+
+      <!-- LISTA DE COMPRAS -->
+      <section id="tela-compras" class="tela" style="display:none;">
+        <h2 class="section-title">🛒 Lista de Compras</h2>
+
+        <div class="card">
+          <div class="flex gap-2">
+            <input type="text" id="novo-item-compra" class="input" placeholder="Adicionar item..." style="flex:1;">
+            <button class="btn btn-primary" onclick="app.adicionarItemCompra()" style="padding:14px 18px;">➕</button>
+          </div>
+        </div>
+
+        <div id="lista-compras" class="mt-3"></div>
+
+        <button class="btn btn-secondary btn-block mt-3" onclick="app.exportarLista()">
+          📤 Exportar Lista
+        </button>
+      </section>
+
+      <!-- CADASTRAR RECEITA -->
+      <section id="tela-cadastrar-receita" class="tela" style="display:none;">
+        <h2 class="section-title">📝 Nova Receita</h2>
+
+        <div class="card">
+          <div class="input-group">
+            <label>Título da Receita</label>
+            <input type="text" id="rec-titulo" class="input" placeholder="Ex: Bolo de Cenoura Sem Glúten">
+          </div>
+
+          <div class="input-group">
+            <label>Tempo de Preparo (minutos)</label>
+            <input type="number" id="rec-tempo" class="input" placeholder="45">
+          </div>
+
+          <div class="input-group">
+            <label>Ingredientes (um por linha)</label>
+            <textarea id="rec-ingredientes" class="input" rows="5" placeholder="2 xícaras de farinha de arroz&#10;1 xícara de açúcar&#10;3 ovos"></textarea>
+          </div>
+
+          <div class="input-group">
+            <label>Modo de Preparo (um passo por linha)</label>
+            <textarea id="rec-modo" class="input" rows="6" placeholder="Pré-aqueça o forno a 180°C.&#10;Misture os ingredientes secos.&#10;Adicione os ovos e mexa bem."></textarea>
+          </div>
+
+          <label style="font-size:0.85rem; font-weight:600; color:var(--rabanete); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:8px; display:block;">Categorias</label>
+          <div class="chips-container" id="cad-categorias">
+            <button class="chip chip-categoria" onclick="app.toggleCategoria(this)">Sem Glúten</button>
+            <button class="chip chip-categoria" onclick="app.toggleCategoria(this)">Sem Lactose</button>
+            <button class="chip chip-categoria" onclick="app.toggleCategoria(this)">Sem Ovo</button>
+            <button class="chip chip-categoria" onclick="app.toggleCategoria(this)">Sem Nozes</button>
+            <button class="chip chip-categoria" onclick="app.toggleCategoria(this)">Vegano</button>
+            <button class="chip chip-categoria" onclick="app.toggleCategoria(this)">Low Carb</button>
+          </div>
+
+          <button class="btn btn-primary btn-block mt-4" onclick="app.salvarReceita()">
+            ✅ Publicar Receita
+          </button>
+        </div>
+      </section>
+
+      <!-- SOCIAL / SEGUIDORES -->
+      <section id="tela-social" class="tela" style="display:none;">
+        <h2 class="section-title">👥 Comunidade</h2>
+
+        <div class="card">
+          <div class="input-group">
+            <label>Buscar usuários</label>
+            <input type="text" id="busca-usuarios" class="input" placeholder="Nome ou e-mail" onkeyup="app.buscarUsuarios(this.value)">
+          </div>
+        </div>
+
+        <h3 class="section-title" style="font-size:1.1rem; margin-top:16px;">Sugestões para Seguir</h3>
+        <div id="lista-usuarios"></div>
+
+        <h3 class="section-title" style="font-size:1.1rem; margin-top:20px;">Quem eu sigo</h3>
+        <div id="lista-seguindo"></div>
+      </section>
+
+      <!-- NOTIFICAÇÕES -->
+      <section id="tela-notificacoes" class="tela" style="display:none;">
+        <h2 class="section-title">🔔 Notificações</h2>
+        <div id="lista-notificacoes"></div>
+      </section>
+
+      <!-- CONFIGURAÇÕES -->
+      <section id="tela-configuracoes" class="tela" style="display:none;">
+        <h2 class="section-title">⚙️ Configurações</h2>
+
+        <div class="card">
+          <h3 style="font-size:1rem; margin-bottom:16px;">🎨 Aparência</h3>
+          <div class="flex flex-between" style="margin-bottom:16px;">
+            <div>
+              <div style="font-weight:600;">Modo Escuro</div>
+              <div class="text-sm opacity-60">Mais conforto visual noturno</div>
+            </div>
+            <div class="toggle" id="toggle-dark" onclick="app.toggleDarkMode()"></div>
+          </div>
+
+          <div class="flex flex-between">
+            <div>
+              <div style="font-weight:600;">Tamanho da Fonte</div>
+              <div class="text-sm opacity-60">Aumentar para acessibilidade</div>
+            </div>
+            <div class="toggle" id="toggle-fonte" onclick="app.toggleFonte()"></div>
+          </div>
+        </div>
+
+        <div class="card mt-3">
+          <h3 style="font-size:1rem; margin-bottom:16px;">🔒 Privacidade e Dados</h3>
+          <div class="flex flex-between" style="margin-bottom:16px;">
+            <div>
+              <div style="font-weight:600;">Perfil Privado</div>
+              <div class="text-sm opacity-60">Apenas seguidores veem suas receitas</div>
+            </div>
+            <div class="toggle" id="toggle-privado" onclick="app.togglePrivacidade()"></div>
+          </div>
+
+          <div class="flex flex-between" style="margin-bottom:16px;">
+            <div>
+              <div style="font-weight:600;">Notificações Push</div>
+              <div class="text-sm opacity-60">Receber alertas de segurança alimentar</div>
+            </div>
+            <div class="toggle active" id="toggle-push"></div>
+          </div>
+
+          <button class="btn btn-outline btn-block" onclick="app.exportarDados()">
+            📥 Exportar Meus Dados
+          </button>
+          <button class="btn btn-outline btn-block mt-2" onclick="app.limparDados()" style="border-color:#e07a5f; color:#e07a5f;">
+            🗑️ Apagar Todos os Dados
+          </button>
+        </div>
+
+        <div class="card mt-3">
+          <h3 style="font-size:1rem; margin-bottom:12px;">♿ Acessibilidade</h3>
+          <p class="text-sm opacity-60 mb-3">Leitor de tela otimizado. Alto contraste ativado automaticamente no modo escuro.</p>
+          <button class="btn btn-secondary btn-block" onclick="app.ativarLeitor()">
+            🔊 Ativar Leitor de Tela
+          </button>
+        </div>
+
+        <button class="btn btn-dark btn-block mt-4" onclick="app.sair()">
+          🚪 Sair da Conta
+        </button>
+      </section>
+    </main>
+
+    <!-- NAVEGAÇÃO INFERIOR - ZONA DO POLEGAR -->
+    <nav id="bottom-nav" class="bottom-nav" style="display:none;">
+      <button class="nav-item active" onclick="app.irPara('feed')">
+        <span class="nav-icon">🏠</span>
+        <span>Início</span>
+      </button>
+      <button class="nav-item" onclick="app.irPara('busca')">
+        <span class="nav-icon">🔍</span>
+        <span>Buscar</span>
+      </button>
+      <button class="nav-item" onclick="app.irPara('cadastrar-receita')">
+        <span class="nav-icon" style="font-size:1.8rem;">➕</span>
+        <span>Nova</span>
+      </button>
+      <button class="nav-item" onclick="app.irPara('compras')">
+        <span class="nav-icon">🛒</span>
+        <span>Compras</span>
+      </button>
+      <button class="nav-item" onclick="app.irPara('perfil')">
+        <span class="nav-icon">👤</span>
+        <span>Perfil</span>
+      </button>
+    </nav>
+
+    <!-- FAB (botão flutuante) -->
+    <button id="fab" class="btn btn-fab" style="display:none;" onclick="app.fabAction()">
+      ➕
+    </button>
+  </div>
+
+  <script src="js/app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js')
+        .then(reg => console.log('SW registrado'))
+        .catch(err => console.log('SW erro', err));
+    }
+  </script>
+</body>
+</html>
