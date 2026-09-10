@@ -17,6 +17,22 @@
   <div id="app">
     <!-- Toast -->
     <div id="toast" class="toast"></div>
+        <!-- MODAL DE SUCESSO - Publicar Receita -->
+    <div id="success-modal-overlay" class="success-modal-overlay">
+      <div class="success-modal-card">
+        <div class="success-check-circle">
+          <svg viewBox="0 0 80 80">
+            <circle cx="40" cy="40" r="34"></circle>
+            <path d="M24 41 L35 52 L57 28"></path>
+          </svg>
+        </div>
+        <h2 id="success-modal-titulo">Receita Publicada!</h2>
+        <p id="success-modal-texto">Sua receita já está disponível para a comunidade.</p>
+        <button class="btn btn-primary btn-block" onclick="app.fecharModalSucesso(); app.irPara('feed');">
+          🎉 Ver Receitas
+        </button>
+      </div>
+    </div>
     <template id="skeleton-template">
   <div class="skeleton-container" id="skeleton-wrapper">
     <div class="skeleton-card">
