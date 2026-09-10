@@ -540,8 +540,8 @@ const app = {
         <h3 class="section-title" style="font-size:1.1rem;">🥘 Ingredientes</h3>
         ${ings.map(ri => {
           const ing = this.dados.ingredientes.find(i => i.id === ri.id_ingrediente);
-          return `<div class="ingrediente-check">
-            <input type="checkbox" id="ing-${ri.id_ingrediente}">
+          return `<div class="ingrediente-check" id="ing-check-${ri.id_ingrediente}">
+            <input type="checkbox" id="ing-${ri.id_ingrediente}" onchange="app.toggleIngredienteCheck(${ri.id_ingrediente})">
             <label for="ing-${ri.id_ingrediente}"><strong>${ri.quantidade}</strong> ${ing.nome}</label>
           </div>`;
         }).join('')}
@@ -1105,8 +1105,6 @@ const app = {
     });
 
     this.salvarDados();
-    this.toast('Receita publicada! 🎉');
-
     // Limpar formulário
     document.getElementById('rec-titulo').value = '';
     document.getElementById('rec-tempo').value = '';
@@ -1114,9 +1112,27 @@ const app = {
     this.novaReceitaIngredientes = [];
     this.novaReceitaPassos = [];
 
-    setTimeout(() => {
-      this.irPara('feed');
-    }, 300);
+    this.mostrarModalSucesso('Receita Publicada!', 'Sua receita já está disponível para a comunidade.');
+  },
+
+  mostrarModalSucesso(titulo, mensagem) {
+    const overlay = document.getElementById('success-modal-overlay');
+    if (!overlay) return;
+    document.getElementById('success-modal-titulo').textContent = titulo;
+    document.getElementById('success-modal-texto').textContent = mensagem;
+    overlay.classList.add('active');
+  },
+
+  fecharModalSucesso() {
+    const overlay = document.getElementById('success-modal-overlay');
+    if (overlay) overlay.classList.remove('active');
+  },
+
+  toggleIngredienteCheck(id) {
+    const checkbox = document.getElementById('ing-' + id);
+    const wrapper = document.getElementById('ing-check-' + id);
+    if (!checkbox || !wrapper) return;
+    wrapper.classList.toggle('marcado', checkbox.checked);
   },
 
   // Social
