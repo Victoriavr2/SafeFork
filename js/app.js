@@ -17,6 +17,35 @@ const app = {
     this.renderizarAlergiasBusca();
   },
 
+   mostrarSkeleton() {
+    const container = document.getElementById('feed-receitas');
+    const template = document.getElementById('skeleton-template');
+    if (!template || !container) return;
+    container.innerHTML = '';
+    const clone = template.content.cloneNode(true);
+    container.appendChild(clone);
+  },
+
+  esconderSkeleton() {
+    const skeleton = document.getElementById('skeleton-wrapper');
+    if (skeleton) {
+      skeleton.classList.add('skeleton-fade-out');
+      setTimeout(() => {
+        if (skeleton.parentNode) skeleton.parentNode.removeChild(skeleton);
+      }, 400);
+    }
+  },
+
+  carregarFeedComSkeleton() {
+    const container = document.getElementById('feed-receitas');
+    if (!container) return;
+    this.mostrarSkeleton();
+    setTimeout(() => {
+      this.esconderSkeleton();
+      this.renderizarFeed();
+    }, 1200);
+  },
+
   // Dados padrão
   dadosPadrao() {
     return {
