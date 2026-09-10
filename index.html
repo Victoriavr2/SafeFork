@@ -317,14 +317,25 @@
             <input type="number" id="rec-tempo" class="input" placeholder="45">
           </div>
 
+          <!-- INGREDIENTES DINÂMICOS COM SWIPE TO DELETE -->
           <div class="input-group">
-            <label>Ingredientes (um por linha)</label>
-            <textarea id="rec-ingredientes" class="input" rows="5" placeholder="2 xícaras de farinha de arroz&#10;1 xícara de açúcar&#10;3 ovos"></textarea>
+            <label>🥘 Ingredientes</label>
+            <div id="dyn-ingredientes-lista" style="margin-bottom:10px;"></div>
+            <div class="flex gap-2">
+              <input type="text" id="dyn-ingrediente-qtd" class="input" placeholder="Qtd (ex: 2 xícaras)" style="flex:1;">
+              <input type="text" id="dyn-ingrediente-nome" class="input" placeholder="Nome (ex: farinha)" style="flex:2;">
+              <button class="btn btn-secondary" onclick="app.adicionarIngredienteDinamico()" style="padding:14px 16px; min-width:52px;">➕</button>
+            </div>
           </div>
 
+          <!-- MODO DE PREPARO DINÂMICO COM SWIPE TO DELETE -->
           <div class="input-group">
-            <label>Modo de Preparo (um passo por linha)</label>
-            <textarea id="rec-modo" class="input" rows="6" placeholder="Pré-aqueça o forno a 180°C.&#10;Misture os ingredientes secos.&#10;Adicione os ovos e mexa bem."></textarea>
+            <label>👨‍🍳 Modo de Preparo</label>
+            <div id="dyn-modo-lista" style="margin-bottom:10px;"></div>
+            <div class="flex gap-2">
+              <input type="text" id="dyn-modo-passo" class="input" placeholder="Descreva o passo..." style="flex:1;">
+              <button class="btn btn-secondary" onclick="app.adicionarPassoDinamico()" style="padding:14px 16px; min-width:52px;">➕</button>
+            </div>
           </div>
 
           <label style="font-size:0.85rem; font-weight:600; color:var(--rabanete); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:8px; display:block;">Categorias</label>
@@ -337,12 +348,22 @@
             <button class="chip chip-categoria" onclick="app.toggleCategoria(this)">Low Carb</button>
           </div>
 
-          <button class="btn btn-primary btn-block mt-4" onclick="app.salvarReceita()">
+          <!-- SWIPE TO CONFIRM -->
+          <div class="swipe-confirm-container" id="swipe-confirm-box">
+            <div class="swipe-confirm-track">
+              <div class="swipe-confirm-text">➡️ Arraste para publicar</div>
+              <div class="swipe-confirm-fill" id="swipe-fill"></div>
+              <div class="swipe-confirm-thumb" id="swipe-thumb">
+                <span>🍴</span>
+              </div>
+            </div>
+          </div>
+
+          <button class="btn btn-primary btn-block mt-3" id="btn-publicar-normal" onclick="app.salvarReceita()" style="display:none;">
             ✅ Publicar Receita
           </button>
         </div>
       </section>
-
       <!-- SOCIAL / SEGUIDORES -->
       <section id="tela-social" class="tela" style="display:none;">
         <h2 class="section-title">👥 Comunidade</h2>
