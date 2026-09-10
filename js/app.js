@@ -321,7 +321,7 @@ const app = {
     }
 
     // Renderizar conteúdo específico
-    if (tela === 'feed') this.renderizarFeed();
+    if (tela === 'feed') this.carregarFeedComSkeleton();
     if (tela === 'perfil') this.renderizarPerfil();
     if (tela === 'alergias') this.renderizarAlergias();
     if (tela === 'compras') this.renderizarCompras();
@@ -428,7 +428,7 @@ const app = {
     this.filtros.categoria = cat;
     document.querySelectorAll('#tela-feed .chip-categoria').forEach(c => c.classList.remove('active'));
     if (el) el.classList.add('active');
-    this.renderizarFeed();
+    this.carregarFeedComSkeleton();
   },
 
   buscarReceitas(termo) {
