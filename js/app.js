@@ -1,6 +1,7 @@
 /* ============================================
    SafeFork PWA - Aplicação Principal
    Mobile First | Thumb Zone | Offline Ready
+   + Gestos de Navegação (Swipe to Delete / Swipe to Confirm)
    ============================================ */
 
 const app = {
@@ -9,6 +10,11 @@ const app = {
   telaAtual: 'feed',
   historico: [],
   filtros: { categoria: 'todas', alergias: [], tempo: 0 },
+
+  // Estado do formulário "Nova Receita" (listas dinâmicas com swipe)
+  novaReceitaIngredientes: [],
+  novaReceitaPassos: [],
+  _swipeConfirmBound: false,
 
   // Inicialização
   init() {
@@ -329,6 +335,7 @@ const app = {
     if (tela === 'notificacoes') this.renderizarNotificacoes();
     if (tela === 'configuracoes') this.renderizarConfiguracoes();
     if (tela === 'busca') this.renderizarAlergiasBusca();
+    if (tela === 'cadastrar-receita') this.iniciarFormularioReceita();
 
     window.scrollTo(0, 0);
   },
@@ -778,19 +785,290 @@ const app = {
     this.toast('Lista exportada! 📤');
   },
 
-  // Cadastrar Receita
+  // ============================================
+  // CADASTRAR RECEITA — Listas Dinâmicas (Gestos)
+  // ============================================
+
   toggleCategoria(el) {
     el.classList.toggle('active');
   },
 
-  salvarReceita() {
-    const titulo = document.getElementById('rec-titulo').value;
-    const tempo = parseInt(document.getElementById('rec-tempo').value);
-    const ingText = document.getElementById('rec-ingredientes').value;
-    const modoText = document.getElementById('rec-modo').value;
+  // Chamado toda vez que a tela "Nova Receita" é aberta
+  iniciarFormularioReceita() {
+    if (!Array.isArray(this.novaReceitaIngredientes)) this.novaReceitaIngredientes = [];
+    if (!Array.isArray(this.novaReceitaPassos)) this.novaReceitaPassos = [];
+    this.renderizarIngredientesDinamicos();
+    this.renderizarPassosDinamicos();
+    this.resetSwipeConfirm();
+    this.iniciarSwipeConfirm();
+  },
 
-    if (!titulo || !tempo || !ingText || !modoText) {
-      this.toast('Preencha todos os campos ⚠️');
+  // --- Ingredientes ---
+  adicionarIngredienteDinamico() {
+    const qtdEl = document.getElementById('dyn-ingrediente-qtd');
+    const nomeEl = document.getElementById('dyn-ingrediente-nome');
+    const qtd = qtdEl.value.trim();
+    const nome = nomeEl.value.trim();
+
+    if (!nome) {
+      this.toast('Digite o nome do ingrediente ⚠️');
+      return;
+    }
+
+    this.novaReceitaIngredientes.push({ qtd: qtd || 'a gosto', nome });
+    qtdEl.value = '';
+    nomeEl.value = '';
+    nomeEl.focus();
+    this.renderizarIngredientesDinamicos();
+  },
+
+  removerIngredienteDinamico(idx) {
+    this.novaReceitaIngredientes.splice(idx, 1);
+    this.renderizarIngredientesDinamicos();
+    this.toast('Ingrediente removido 🗑️');
+  },
+
+  renderizarIngredientesDinamicos() {
+    const container = document.getElementById('dyn-ingredientes-lista');
+    if (!container) return;
+
+    if (this.novaReceitaIngredientes.length === 0) {
+      container.innerHTML = '<p class="text-xs opacity-60" style="padding:4px 2px;">Nenhum ingrediente adicionado ainda.</p>';
+      return;
+    }
+
+    container.innerHTML = this.novaReceitaIngredientes.map((ing, idx) => `
+      <div class="dyn-item" data-idx="${idx}">
+        <div class="dyn-item-number">${idx + 1}</div>
+        <div class="dyn-item-text"><strong>${ing.qtd}</strong> ${ing.nome}</div>
+        <button class="dyn-item-delete" onclick="app.removerIngredienteDinamico(${idx})" aria-label="Excluir ingrediente">🗑️</button>
+        <div class="dyn-item-swipe-delete" onclick="app.removerIngredienteDinamico(${idx})">🗑️</div>
+      </div>
+    `).join('');
+
+    this.ativarSwipeDelete(container);
+  },
+
+  // --- Modo de Preparo ---
+  adicionarPassoDinamico() {
+    const passoEl = document.getElementById('dyn-modo-passo');
+    const texto = passoEl.value.trim();
+
+    if (!texto) {
+      this.toast('Descreva o passo ⚠️');
+      return;
+    }
+
+    this.novaReceitaPassos.push(texto);
+    passoEl.value = '';
+    passoEl.focus();
+    this.renderizarPassosDinamicos();
+  },
+
+  removerPassoDinamico(idx) {
+    this.novaReceitaPassos.splice(idx, 1);
+    this.renderizarPassosDinamicos();
+    this.toast('Passo removido 🗑️');
+  },
+
+  renderizarPassosDinamicos() {
+    const container = document.getElementById('dyn-modo-lista');
+    if (!container) return;
+
+    if (this.novaReceitaPassos.length === 0) {
+      container.innerHTML = '<p class="text-xs opacity-60" style="padding:4px 2px;">Nenhum passo adicionado ainda.</p>';
+      return;
+    }
+
+    container.innerHTML = this.novaReceitaPassos.map((passo, idx) => `
+      <div class="dyn-item" data-idx="${idx}">
+        <div class="dyn-item-number">${idx + 1}</div>
+        <div class="dyn-item-text">${passo}</div>
+        <button class="dyn-item-delete" onclick="app.removerPassoDinamico(${idx})" aria-label="Excluir passo">🗑️</button>
+        <div class="dyn-item-swipe-delete" onclick="app.removerPassoDinamico(${idx})">🗑️</div>
+      </div>
+    `).join('');
+
+    this.ativarSwipeDelete(container);
+  },
+
+  // --- Gesto: Swipe to Delete ---
+  // Arrastar o item para a esquerda revela a área vermelha de exclusão.
+  // O botão de lixeira (dyn-item-delete) continua sempre visível e funciona
+  // independente do swipe, garantindo acessibilidade a quem não usa gestos.
+  ativarSwipeDelete(container) {
+    const LIMIAR_ABERTURA = 40; // px arrastados para "prender" o item aberto
+    const LARGURA_MAX = 80;     // deve bater com .dyn-item-swipe-delete { width: 80px }
+
+    container.querySelectorAll('.dyn-item').forEach(item => {
+      let startX = 0;
+      let deltaAtual = 0;
+      let dragging = false;
+      let baseAberta = false;
+
+      const onStart = (x) => {
+        dragging = true;
+        startX = x;
+        baseAberta = item.classList.contains('show-delete');
+        item.classList.add('swiping');
+      };
+
+      const onMove = (x) => {
+        if (!dragging) return;
+        let delta = x - startX;
+        if (baseAberta) delta -= LARGURA_MAX;
+        delta = Math.max(-LARGURA_MAX, Math.min(0, delta));
+        deltaAtual = delta;
+        item.style.transform = `translateX(${delta}px)`;
+      };
+
+      const onEnd = () => {
+        if (!dragging) return;
+        dragging = false;
+        item.classList.remove('swiping');
+        item.style.transform = '';
+        if (deltaAtual <= -LIMIAR_ABERTURA) {
+          item.classList.add('show-delete');
+        } else {
+          item.classList.remove('show-delete');
+        }
+      };
+
+      // Touch (celular)
+      item.addEventListener('touchstart', e => onStart(e.touches[0].clientX), { passive: true });
+      item.addEventListener('touchmove', e => onMove(e.touches[0].clientX), { passive: true });
+      item.addEventListener('touchend', onEnd);
+      item.addEventListener('touchcancel', onEnd);
+
+      // Mouse (teste em desktop)
+      item.addEventListener('mousedown', e => onStart(e.clientX));
+      item.addEventListener('mousemove', e => { if (dragging) onMove(e.clientX); });
+      item.addEventListener('mouseup', onEnd);
+      item.addEventListener('mouseleave', () => { if (dragging) onEnd(); });
+    });
+  },
+
+  // --- Gesto: Swipe to Confirm (publicar receita) ---
+  // O usuário arrasta a bolinha da esquerda até o final da barra para confirmar.
+  iniciarSwipeConfirm() {
+    if (this._swipeConfirmBound) return; // liga os listeners apenas uma vez
+    this._swipeConfirmBound = true;
+
+    const box = document.getElementById('swipe-confirm-box');
+    const track = box ? box.querySelector('.swipe-confirm-track') : null;
+    const thumb = document.getElementById('swipe-thumb');
+    const fill = document.getElementById('swipe-fill');
+    const texto = box ? box.querySelector('.swipe-confirm-text') : null;
+    if (!box || !track || !thumb || !fill) return;
+
+    const THUMB = 48;
+    const PAD = 4;
+    let dragging = false;
+    let startX = 0;
+    let thumbStartLeft = 0;
+    let maxX = 0;
+
+    const getMaxX = () => Math.max(0, track.offsetWidth - THUMB - PAD * 2);
+
+    const onStart = (clientX) => {
+      if (box.classList.contains('disabled')) return;
+      dragging = true;
+      maxX = getMaxX();
+      startX = clientX;
+      thumbStartLeft = thumb.offsetLeft - PAD;
+      thumb.classList.remove('released', 'shake');
+    };
+
+    const onMove = (clientX) => {
+      if (!dragging) return;
+      const delta = clientX - startX;
+      const novoLeft = Math.max(0, Math.min(maxX, thumbStartLeft + delta));
+      thumb.style.left = (novoLeft + PAD) + 'px';
+      fill.style.width = (novoLeft + THUMB / 2) + 'px';
+      const pct = maxX > 0 ? (novoLeft / maxX) * 100 : 0;
+      if (texto) texto.classList.toggle('hidden', pct > 15);
+    };
+
+    const onEnd = () => {
+      if (!dragging) return;
+      dragging = false;
+      maxX = getMaxX();
+      const left = thumb.offsetLeft - PAD;
+      thumb.classList.add('released');
+
+      if (maxX > 0 && left >= maxX - 6) {
+        // Chegou até o final: confirma a publicação
+        thumb.style.left = (maxX + PAD) + 'px';
+        fill.style.width = '100%';
+        this.confirmarPublicacaoReceita();
+      } else {
+        // Não chegou até o final: volta e avisa
+        thumb.style.left = PAD + 'px';
+        fill.style.width = '0%';
+        if (texto) texto.classList.remove('hidden');
+        thumb.classList.add('shake');
+        setTimeout(() => thumb.classList.remove('shake'), 400);
+      }
+    };
+
+    thumb.addEventListener('touchstart', e => { onStart(e.touches[0].clientX); }, { passive: true });
+    document.addEventListener('touchmove', e => { if (dragging) onMove(e.touches[0].clientX); }, { passive: true });
+    document.addEventListener('touchend', onEnd);
+    document.addEventListener('touchcancel', onEnd);
+
+    thumb.addEventListener('mousedown', e => { e.preventDefault(); onStart(e.clientX); });
+    document.addEventListener('mousemove', e => { if (dragging) onMove(e.clientX); });
+    document.addEventListener('mouseup', onEnd);
+  },
+
+  // Volta a barra de confirmação para o estado inicial (usado ao entrar na tela)
+  resetSwipeConfirm() {
+    const box = document.getElementById('swipe-confirm-box');
+    const thumb = document.getElementById('swipe-thumb');
+    const fill = document.getElementById('swipe-fill');
+    const texto = box ? box.querySelector('.swipe-confirm-text') : null;
+    if (!box || !thumb || !fill) return;
+
+    thumb.style.left = '4px';
+    thumb.classList.remove('success', 'released', 'shake');
+    fill.style.width = '0%';
+    fill.classList.remove('complete');
+    if (texto) texto.classList.remove('hidden');
+    box.classList.remove('disabled');
+  },
+
+  // Chamado quando o usuário arrasta a barra até o fim
+  confirmarPublicacaoReceita() {
+    const titulo = document.getElementById('rec-titulo').value.trim();
+    const tempo = parseInt(document.getElementById('rec-tempo').value);
+
+    if (!titulo || !tempo || this.novaReceitaIngredientes.length === 0 || this.novaReceitaPassos.length === 0) {
+      this.toast('Preencha título, tempo, ingredientes e modo de preparo ⚠️');
+      this.resetSwipeConfirm();
+      return;
+    }
+
+    const thumb = document.getElementById('swipe-thumb');
+    const fill = document.getElementById('swipe-fill');
+    const box = document.getElementById('swipe-confirm-box');
+
+    thumb.classList.add('success');
+    fill.classList.add('complete');
+    box.classList.add('disabled');
+
+    setTimeout(() => {
+      this.salvarReceita();
+    }, 450);
+  },
+
+  // Publica de fato a receita (usado pelo swipe-to-confirm e pelo botão de fallback)
+  salvarReceita() {
+    const titulo = document.getElementById('rec-titulo').value.trim();
+    const tempo = parseInt(document.getElementById('rec-tempo').value);
+
+    if (!titulo || !tempo || this.novaReceitaIngredientes.length === 0 || this.novaReceitaPassos.length === 0) {
+      this.toast('Preencha título, tempo, ingredientes e modo de preparo ⚠️');
+      this.resetSwipeConfirm();
       return;
     }
 
@@ -802,7 +1080,7 @@ const app = {
       id: Date.now(),
       id_usuario: this.usuarioAtual.id,
       titulo,
-      modo_preparo: modoText,
+      modo_preparo: this.novaReceitaPassos.join('\n'),
       tempo_preparo: tempo,
       data_criacao: new Date().toISOString().split('T')[0],
       categorias: categorias.length ? categorias : ['sem-categoria'],
@@ -812,36 +1090,33 @@ const app = {
 
     this.dados.receitas.unshift(novaReceita);
 
-    // Processar ingredientes
-    const ings = ingText.split('\n').filter(i => i.trim());
-    ings.forEach((linha, idx) => {
-      const partes = linha.match(/^(.+?)\s+de\s+(.+)$/i) || linha.match(/^(.+?)\s+(.+)$/);
-      const quantidade = partes ? partes[1] : 'a gosto';
-      const nomeIng = partes ? partes[2] : linha;
-
-      let ing = this.dados.ingredientes.find(i => i.nome.toLowerCase() === nomeIng.trim().toLowerCase());
+    // Processar ingredientes dinâmicos
+    this.novaReceitaIngredientes.forEach(ingItem => {
+      let ing = this.dados.ingredientes.find(i => i.nome.toLowerCase() === ingItem.nome.toLowerCase());
       if (!ing) {
-        ing = { id: Date.now() + idx, nome: nomeIng.trim() };
+        ing = { id: Date.now() + Math.random(), nome: ingItem.nome };
         this.dados.ingredientes.push(ing);
       }
-
       this.dados.receitaIngredientes.push({
         id_receita: novaReceita.id,
         id_ingrediente: ing.id,
-        quantidade
+        quantidade: ingItem.qtd
       });
     });
 
     this.salvarDados();
     this.toast('Receita publicada! 🎉');
-    this.irPara('feed');
 
-    // Limpar form
+    // Limpar formulário
     document.getElementById('rec-titulo').value = '';
     document.getElementById('rec-tempo').value = '';
-    document.getElementById('rec-ingredientes').value = '';
-    document.getElementById('rec-modo').value = '';
     document.querySelectorAll('#cad-categorias .active').forEach(el => el.classList.remove('active'));
+    this.novaReceitaIngredientes = [];
+    this.novaReceitaPassos = [];
+
+    setTimeout(() => {
+      this.irPara('feed');
+    }, 300);
   },
 
   // Social
