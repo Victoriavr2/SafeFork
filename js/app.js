@@ -227,11 +227,13 @@ const app = {
     }
   },
 
-  // Autenticação
+  // Autenticação tradicional (mantida para as contas locais já existentes)
   fazerLogin() {
-    const email = document.getElementById('login-email').value;
+    const email = document.getElementById('login-email').value.trim().toLowerCase();
     const senha = document.getElementById('login-senha').value;
-    const usuario = this.dados.usuarios.find(u => u.email === email && u.senha === senha);
+    const usuario = this.dados.usuarios.find(u =>
+      (u.email || '').toLowerCase() === email && u.senha === senha
+    );
 
     if (usuario) {
       this.usuarioAtual = usuario;
@@ -241,6 +243,78 @@ const app = {
       this.toast('Bem-vindo de volta, ' + usuario.nome + '! 🛡️');
     } else {
       this.toast('E-mail ou senha incorretos ❌');
+    }
+  },
+
+  // Login Google via Firebase Authentication
+  async fazerLoginGoogle() {
+    if (!window.safeForkAuth || !window.safeForkGoogleProvider) {
+      this.toast('Não foi possível iniciar o Firebase. Atualize a página e tente novamente.');
+      return;
+    }
+
+    try {
+      const resultado = await window.safeForkAuth.signInWithPopup(window.safeForkGoogleProvider);
+      const conta = resultado.user;
+
+      if (!conta) {
+        this.toast('Não foi possível obter os dados da conta Google.');
+        return;
+      }
+
+      const email = (conta.email || '').trim().toLowerCase();
+      if (!email) {
+        this.toast('A conta Google não retornou um e-mail válido.');
+        await window.safeForkAuth.signOut();
+        return;
+      }
+
+      // Reaproveita o perfil local se o e-mail já existir; caso contrário, cria um.
+      let usuario = this.dados.usuarios.find(u =>
+        (u.email || '').trim().toLowerCase() === email
+      );
+
+      if (!usuario) {
+        const nome = conta.displayName || email.split('@')[0];
+        usuario = {
+          id: Date.now(),
+          firebaseUid: conta.uid,
+          nome,
+          email,
+          senha: null,
+          bio: '',
+          foto: conta.photoURL || nome.charAt(0).toUpperCase(),
+          fotoGoogle: conta.photoURL || '',
+          privado: false
+        };
+        this.dados.usuarios.push(usuario);
+        this.salvarDados();
+      } else {
+        usuario.firebaseUid = conta.uid;
+        if (conta.displayName && !usuario.nome) usuario.nome = conta.displayName;
+        if (conta.photoURL) {
+          usuario.fotoGoogle = conta.photoURL;
+          // Preserva a foto personalizada já escolhida no perfil.
+          if (!usuario.foto) usuario.foto = conta.photoURL;
+        }
+        this.salvarDados();
+      }
+
+      this.usuarioAtual = usuario;
+      localStorage.setItem('safefork_usuario', JSON.stringify(usuario));
+      this.mostrarApp();
+      this.irPara('feed');
+      this.toast('Login com Google realizado! Bem-vindo(a), ' + usuario.nome + ' 🛡️');
+    } catch (erro) {
+      console.error('Erro no login Google:', erro);
+      const mensagens = {
+        'auth/popup-closed-by-user': 'A janela de login foi fechada antes da conclusão.',
+        'auth/popup-blocked': 'O navegador bloqueou a janela. Permita pop-ups para este site.',
+        'auth/unauthorized-domain': 'Este domínio ainda não está autorizado no Firebase.',
+        'auth/network-request-failed': 'Falha de conexão. Verifique sua internet e tente novamente.',
+        'auth/account-exists-with-different-credential': 'Já existe uma conta com este e-mail usando outro método de login.'
+      };
+      this.toast(mensagens[erro.code] || 'Não foi possível entrar com Google. Tente novamente.');
     }
   },
 
@@ -279,10 +353,18 @@ const app = {
     this.toast('Conta criada! Configure suas alergias 🎉');
   },
 
-  sair() {
-    localStorage.removeItem('safefork_usuario');
-    this.usuarioAtual = null;
-    location.reload();
+  async sair() {
+    try {
+      if (window.safeForkAuth && window.safeForkAuth.currentUser) {
+        await window.safeForkAuth.signOut();
+      }
+    } catch (erro) {
+      console.error('Erro ao encerrar sessão do Firebase:', erro);
+    } finally {
+      localStorage.removeItem('safefork_usuario');
+      this.usuarioAtual = null;
+      location.reload();
+    }
   },
 
   mostrarLogin() {
