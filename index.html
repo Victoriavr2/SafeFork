@@ -102,6 +102,9 @@
           <button class="btn btn-primary btn-block" onclick="app.fazerLogin()" style="margin-top:8px;">
             🔐 Entrar
           </button>
+          <button class="btn btn-outline btn-block" onclick="app.fazerLoginGoogle()" style="margin-top:10px;">
+            <span aria-hidden="true">G</span> Entrar com Google
+          </button>
           <button class="btn btn-outline btn-block" onclick="app.mostrarCadastro()" style="margin-top:10px;">
             ✨ Criar Conta
           </button>
@@ -496,6 +499,28 @@
       ➕
     </button>
   </div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script>
+    // Configuração do Firebase do projeto SafeFork
+    const firebaseConfig = {
+      apiKey: "AIzaSyCKU-2-COW7PiyNPkBo48-Fqv7J5kpwE",
+      authDomain: "safefork-e59b2.firebaseapp.com",
+      projectId: "safefork-e59b2",
+      storageBucket: "safefork-e59b2.firebasestorage.app",
+      messagingSenderId: "642943563035",
+      appId: "1:642943563035:web:66f1cd2889e50c57658fbe",
+      measurementId: "G-DKWP5GPHZT"
+    };
+
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
+    // O login social usa popup e mantém a sessão autenticada pelo Firebase.
+    window.safeForkAuth = firebase.auth();
+    window.safeForkGoogleProvider = new firebase.auth.GoogleAuthProvider();
+  </script>
 
   <script src="js/app.js"></script>
   <script>
