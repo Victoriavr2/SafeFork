@@ -99,3 +99,17 @@ Ou crie uma nova conta — todos os dados são salvos no `localStorage` do naveg
 ---
 
 Desenvolvido com 💚 para inclusão alimentar.
+
+
+## 🔑 Login com Google (Firebase Authentication)
+
+O botão **Entrar com Google** utiliza Firebase Authentication com o provedor Google. Para habilitá-lo no seu projeto:
+
+1. No [Firebase Console](https://console.firebase.google.com/), abra o projeto `safefork-e59b2`.
+2. Vá em **Authentication → Sign-in method** e habilite **Google**.
+3. Em **Authentication → Settings → Authorized domains**, adicione o domínio de produção do Vercel (por exemplo, `seu-projeto.vercel.app`) e também `localhost` para testes locais.
+4. Publique os arquivos atualizados no Vercel e teste o botão em HTTPS.
+
+A configuração web do Firebase usada pelo site está no `index.html`. A chave `apiKey` de configuração web é identificadora do projeto; a segurança deve ser aplicada pelas regras e configurações dos serviços Firebase.
+
+**Importante:** esta alteração autentica a identidade do usuário pelo Google/Firebase, mas não migra receitas, comentários, alergias ou demais dados do `localStorage` para a nuvem. Esses dados continuam armazenados localmente no navegador/dispositivo, como na versão original.
