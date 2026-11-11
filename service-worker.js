@@ -1,4 +1,4 @@
-const CACHE_NAME = 'safefork-v1';
+const CACHE_NAME = 'safefork-v2';
 const urlsToCache = [
   '/',
   '/index.html',
