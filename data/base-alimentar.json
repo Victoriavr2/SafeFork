@@ -1,0 +1,171 @@
+
+[
+  {
+    "id": 1,
+    "ingrediente": "Farinha de trigo",
+    "alergeno": "Glúten",
+    "palavras_chave": ["trigo", "farinha de trigo", "glúten"],
+    "perguntas": [
+      "Farinha de trigo contém glúten?",
+      "Trigo tem glúten?",
+      "Existe glúten na farinha de trigo?"
+    ],
+    "resposta": "Sim. A farinha de trigo comum contém glúten naturalmente. Pessoas com doença celíaca devem evitá-la. Confira sempre a composição dos produtos.",
+    "fonte": "NIDDK - Alimentação e doença celíaca",
+    "url": "https://www.niddk.nih.gov/health-information/digestive-diseases/celiac-disease/eating-diet-nutrition"
+  },
+  {
+    "id": 2,
+    "ingrediente": "Leite de coco",
+    "alergeno": "Lactose",
+    "palavras_chave": ["coco", "leite de coco", "lactose"],
+    "perguntas": [
+      "Leite de coco contém lactose?",
+      "Existe lactose no leite de coco?",
+      "Leite de coco tem lactose?"
+    ],
+    "resposta": "O leite de coco puro não contém lactose naturalmente, pois é de origem vegetal. Produtos industrializados podem conter ingredientes adicionais. Confira o rótulo antes do consumo.",
+    "fonte": "Anvisa - Referência geral sobre rotulagem de lactose",
+    "url": "https://www.gov.br/anvisa/pt-br/assuntos/noticias-anvisa/2017/rotulagem-de-lactose-garante-informacao-ao-consumidor/"
+  },
+  {
+    "id": 3,
+    "ingrediente": "Tofu",
+    "alergeno": "Soja",
+    "palavras_chave": ["tofu", "soja"],
+    "perguntas": [
+      "Tofu contém soja?",
+      "Tofu é feito de soja?",
+      "Existe soja no tofu?"
+    ],
+    "resposta": "Sim. O tofu tradicional é produzido a partir da soja. Pessoas com alergia à soja devem evitá-lo.",
+    "fonte": "Anvisa - Rotulagem de alergênicos",
+    "url": "https://www.gov.br/anvisa/pt-br/centraisdeconteudo/publicacoes/alimentos/perguntas-e-respostas-arquivos/rotulagem-de-alergenicos.pdf"
+  },
+  {
+    "id": 4,
+    "ingrediente": "Polvilho",
+    "alergeno": "Glúten",
+    "palavras_chave": ["polvilho", "polvilho doce", "polvilho azedo", "glúten"],
+    "perguntas": [
+      "Polvilho contém glúten?",
+      "Polvilho doce tem glúten?",
+      "Polvilho azedo contém glúten?"
+    ],
+    "resposta": "O polvilho puro é derivado da mandioca e não contém glúten naturalmente. Entretanto, pode ocorrer contaminação cruzada durante a produção. Confira a declaração sobre glúten no rótulo.",
+    "fonte": "Anvisa - Referência geral sobre rotulagem de alimentos",
+    "url": "https://www.gov.br/anvisa/pt-br/assuntos/alimentos/rotulagem"
+  },
+  {
+    "id": 5,
+    "ingrediente": "Leite de vaca",
+    "alergeno": "Lactose",
+    "palavras_chave": ["leite de vaca", "leite", "lactose"],
+    "perguntas": [
+      "Leite de vaca contém lactose?",
+      "Leite comum tem lactose?",
+      "Existe lactose no leite de vaca?"
+    ],
+    "resposta": "Sim. O leite de vaca comum contém lactose, que é um açúcar naturalmente presente no leite. Existem versões com teor reduzido de lactose, que devem ser identificadas pelo rótulo.",
+    "fonte": "Anvisa - Rotulagem de lactose",
+    "url": "https://www.gov.br/anvisa/pt-br/assuntos/noticias-anvisa/2017/rotulagem-de-lactose-garante-informacao-ao-consumidor/"
+  },
+  {
+    "id": 6,
+    "ingrediente": "Leite sem lactose",
+    "alergeno": "Proteínas do leite",
+    "palavras_chave": ["leite sem lactose", "zero lactose", "proteína do leite", "alergia ao leite", "aplv"],
+    "perguntas": [
+      "Leite sem lactose contém proteínas do leite?",
+      "Leite zero lactose serve para quem tem alergia ao leite?",
+      "Quem tem APLV pode tomar leite sem lactose?"
+    ],
+    "resposta": "O leite de vaca sem lactose continua contendo proteínas do leite. Intolerância à lactose e alergia às proteínas do leite são condições diferentes. A retirada da lactose não torna o leite adequado para pessoas com alergia às suas proteínas.",
+    "fonte": "Anvisa - Rotulagem de alergênicos",
+    "url": "https://www.gov.br/anvisa/pt-br/centraisdeconteudo/publicacoes/alimentos/perguntas-e-respostas-arquivos/rotulagem-de-alergenicos.pdf"
+  },
+  {
+    "id": 7,
+    "ingrediente": "Aveia",
+    "alergeno": "Glúten",
+    "palavras_chave": ["aveia", "flocos de aveia", "farinha de aveia", "glúten"],
+    "perguntas": [
+      "Aveia contém glúten?",
+      "Farinha de aveia tem glúten?",
+      "Quem tem doença celíaca pode consumir aveia?"
+    ],
+    "resposta": "A aveia pode sofrer contaminação por trigo, cevada ou centeio. Pessoas com doença celíaca devem verificar a indicação de ausência de glúten e conversar com um profissional de saúde sobre o consumo de aveia.",
+    "fonte": "NIDDK - Alimentação e doença celíaca",
+    "url": "https://www.niddk.nih.gov/health-information/digestive-diseases/celiac-disease/eating-diet-nutrition"
+  },
+  {
+    "id": 8,
+    "ingrediente": "Albumina de ovo",
+    "alergeno": "Ovo",
+    "palavras_chave": ["albumina", "albumina de ovo", "clara de ovo", "ovo"],
+    "perguntas": [
+      "Albumina de ovo contém proteína do ovo?",
+      "Albumina de ovo é derivada do ovo?",
+      "Quem tem alergia a ovo pode consumir albumina de ovo?"
+    ],
+    "resposta": "A albumina de ovo é uma proteína derivada do ovo. Pessoas com alergia ao ovo devem evitar esse ingrediente. Quando o rótulo mencionar apenas albumina, é importante verificar sua origem.",
+    "fonte": "Anvisa - Rotulagem de alergênicos",
+    "url": "https://www.gov.br/anvisa/pt-br/centraisdeconteudo/publicacoes/alimentos/perguntas-e-respostas-arquivos/rotulagem-de-alergenicos.pdf"
+  },
+  {
+    "id": 9,
+    "ingrediente": "Amendoim",
+    "alergeno": "Amendoim e castanhas",
+    "palavras_chave": ["amendoim", "castanha", "castanhas", "leguminosa"],
+    "perguntas": [
+      "Amendoim é uma castanha?",
+      "Amendoim e castanhas são iguais?",
+      "Amendoim é uma leguminosa?"
+    ],
+    "resposta": "O amendoim é uma leguminosa, e não uma castanha. Alergia ao amendoim e alergia a castanhas são diferentes, embora possam coexistir. Verifique ambos os ingredientes nos rótulos.",
+    "fonte": "Anvisa - Referência sobre classificação e rotulagem de alergênicos",
+    "url": "https://www.gov.br/anvisa/pt-br/centraisdeconteudo/publicacoes/alimentos/perguntas-e-respostas-arquivos/rotulagem-de-alergenicos.pdf"
+  },
+  {
+    "id": 10,
+    "ingrediente": "Cevada",
+    "alergeno": "Glúten",
+    "palavras_chave": ["cevada", "glúten"],
+    "perguntas": [
+      "Cevada contém glúten?",
+      "Existe glúten na cevada?",
+      "Cevada tem glúten?"
+    ],
+    "resposta": "Sim. A cevada é um cereal que contém glúten naturalmente. Pessoas com doença celíaca devem evitá-la.",
+    "fonte": "NIDDK - Alimentação e doença celíaca",
+    "url": "https://www.niddk.nih.gov/health-information/digestive-diseases/celiac-disease/eating-diet-nutrition"
+  },
+  {
+    "id": 11,
+    "ingrediente": "Centeio",
+    "alergeno": "Glúten",
+    "palavras_chave": ["centeio", "farinha de centeio", "glúten"],
+    "perguntas": [
+      "Centeio contém glúten?",
+      "Farinha de centeio tem glúten?",
+      "Existe glúten no centeio?"
+    ],
+    "resposta": "Sim. O centeio contém glúten naturalmente. Pessoas com doença celíaca devem evitar esse ingrediente.",
+    "fonte": "NIDDK - Alimentação e doença celíaca",
+    "url": "https://www.niddk.nih.gov/health-information/digestive-diseases/celiac-disease/eating-diet-nutrition"
+  },
+  {
+    "id": 12,
+    "ingrediente": "Contaminação cruzada",
+    "alergeno": "Alergênicos",
+    "palavras_chave": ["contaminação cruzada", "pode conter", "traços", "alergênicos"],
+    "perguntas": [
+      "O que é contaminação cruzada?",
+      "O que significa pode conter no rótulo?",
+      "O que significa pode conter traços de alergênicos?"
+    ],
+    "resposta": "A contaminação cruzada acontece quando um alergênico entra em contato não intencional com um alimento, por exemplo, durante sua produção ou manipulação. A declaração pode conter indica a possibilidade de presença desse alergênico.",
+    "fonte": "Anvisa - Rotulagem de alergênicos",
+    "url": "https://www.gov.br/anvisa/pt-br/centraisdeconteudo/publicacoes/alimentos/perguntas-e-respostas-arquivos/rotulagem-de-alergenicos.pdf"
+  }
+]
