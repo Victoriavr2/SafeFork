@@ -221,6 +221,120 @@
         <div id="resultados-busca"></div>
       </section>
 
+      
+      <!-- SAFEFORK IA - CHATBOT -->
+      <section id="tela-chatbot" class="tela" style="display:none;">
+
+        <div class="ia-cabecalho">
+          <h2 class="section-title">🤖 SafeFork IA</h2>
+          <p class="text-sm mb-3">
+            Seu assistente de ingredientes e alergênicos.
+          </p>
+        </div>
+
+        <!-- Status da inteligência artificial -->
+        <div id="ia-status" class="ia-status" role="status">
+          ⚪ Inteligência artificial ainda não iniciada
+        </div>
+
+        <!-- Área da conversa -->
+        <div id="ia-mensagens"
+             class="ia-mensagens"
+             role="log"
+             aria-label="Conversa com SafeFork IA"
+             aria-live="polite">
+
+          <div class="ia-mensagem ia-assistente">
+            <strong>🤖 SafeFork IA</strong>
+
+            <p>
+              Olá! Sou seu assistente alimentar.
+              Posso ajudar você a entender ingredientes,
+              alergênicos e restrições alimentares.
+            </p>
+
+            <p>Como posso ajudar você hoje? 🌿</p>
+          </div>
+
+        </div>
+
+        <!-- Sugestões de perguntas -->
+        <div class="ia-sugestoes">
+
+          <h3>Experimente perguntar:</h3>
+
+          <button
+            type="button"
+            class="ia-sugestao"
+            data-pergunta="Farinha de trigo contém glúten?"
+            disabled>
+            🌾 Farinha de trigo contém glúten?
+          </button>
+
+          <button
+            type="button"
+            class="ia-sugestao"
+            data-pergunta="Leite de coco contém lactose?"
+            disabled>
+            🥥 Leite de coco contém lactose?
+          </button>
+
+          <button
+            type="button"
+            class="ia-sugestao"
+            data-pergunta="Tofu contém soja?"
+            disabled>
+            🌱 Tofu contém soja?
+          </button>
+
+        </div>
+
+        <!-- Formulário de uma linha -->
+        <form id="ia-form" class="ia-form">
+
+          <input
+            type="text"
+            id="ia-pergunta"
+            class="input"
+            placeholder="Digite sua pergunta..."
+            aria-label="Pergunta para o SafeFork IA"
+            autocomplete="off"
+            maxlength="300"
+            required
+            disabled
+          >
+
+          <button
+            type="submit"
+            id="ia-enviar"
+            class="btn ia-enviar"
+            aria-label="Enviar pergunta"
+            disabled>
+            <span aria-hidden="true">➤</span>
+          </button>
+
+        </form>
+
+        <!-- Limpar conversa -->
+        <button
+          type="button"
+          id="ia-limpar"
+          class="btn btn-ghost btn-block mt-2"
+          disabled>
+          🗑️ Limpar conversa
+        </button>
+
+        <!-- Aviso de segurança alimentar -->
+        <p class="ia-aviso">
+          ⚠️ Informações educativas. O assistente não
+          garante a ausência de alergênicos. Confira
+          sempre os ingredientes, os rótulos e os riscos
+          de contaminação cruzada.
+        </p>
+
+      </section>
+
+
       <!-- DETALHE RECEITA -->
       <section id="tela-receita" class="tela" style="display:none;">
         <button class="btn btn-ghost mb-3" onclick="app.voltar()" style="padding:8px 14px;">
@@ -485,29 +599,47 @@
       </section>
     </main>
 
+
     <!-- NAVEGAÇÃO INFERIOR - ZONA DO POLEGAR -->
     <nav id="bottom-nav" class="bottom-nav" style="display:none;">
+
       <button class="nav-item active" onclick="app.irPara('feed')">
         <span class="nav-icon">🏠</span>
         <span>Início</span>
       </button>
+
       <button class="nav-item" onclick="app.irPara('busca')">
         <span class="nav-icon">🔍</span>
         <span>Buscar</span>
       </button>
+
       <button class="nav-item" onclick="app.irPara('cadastrar-receita')">
         <span class="nav-icon" style="font-size:1.8rem;">➕</span>
         <span>Nova</span>
       </button>
+
       <button class="nav-item" onclick="app.irPara('compras')">
         <span class="nav-icon">🛒</span>
         <span>Compras</span>
       </button>
+
       <button class="nav-item" onclick="app.irPara('perfil')">
         <span class="nav-icon">👤</span>
         <span>Perfil</span>
       </button>
+
+      <!-- NOVO BOTÃO - SAFEFORK IA -->
+      <button
+        type="button"
+        class="nav-item"
+        aria-label="Abrir assistente SafeFork IA"
+        onclick="app.irPara('chatbot')">
+        <span class="nav-icon" aria-hidden="true">🤖</span>
+        <span>IA</span>
+      </button>
+
     </nav>
+
 
     <!-- FAB (botão flutuante) -->
     <button id="fab" class="btn btn-fab" style="display:none;" onclick="app.fabAction()">
