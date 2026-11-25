@@ -400,13 +400,30 @@ const app = {
 
     this.telaAtual = tela;
 
+    // Ocultar botão flutuante na tela do chatbot
+    const fab = document.getElementById('fab');
+
+    if (fab) {
+      fab.style.display =
+        tela === 'chatbot' || !this.usuarioAtual
+          ? 'none'
+          : 'flex';
+    }
+
     document.querySelectorAll('.tela').forEach(el => el.style.display = 'none');
     document.getElementById('tela-' + tela).style.display = 'block';
     document.getElementById('tela-' + tela).classList.add('fade-in');
 
     // Atualizar nav ativo
     document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-    const mapNav = { feed: 0, busca: 1, 'cadastrar-receita': 2, compras: 3, perfil: 4 };
+    const mapNav = {
+      feed: 0,
+      busca: 1,
+      'cadastrar-receita': 2,
+      compras: 3,
+      perfil: 4,
+      chatbot: 5
+    };
     if (mapNav[tela] !== undefined) {
       document.querySelectorAll('.nav-item')[mapNav[tela]].classList.add('active');
     }
@@ -421,6 +438,14 @@ const app = {
     if (tela === 'configuracoes') this.renderizarConfiguracoes();
     if (tela === 'busca') this.renderizarAlergiasBusca();
     if (tela === 'cadastrar-receita') this.iniciarFormularioReceita();
+
+    // Inicializar SafeFork IA somente ao abrir o chatbot
+    if (tela === 'chatbot' && this.usuarioAtual) {
+      if (window.safeForkIA &&
+          typeof window.safeForkIA.iniciar === 'function') {
+        window.safeForkIA.iniciar();
+      }
+    }
 
     const conteudo = document.getElementById('content');
     if (conteudo) conteudo.scrollTop = 0;
