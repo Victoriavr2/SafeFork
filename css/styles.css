@@ -1197,3 +1197,288 @@ body.dark-mode h1, body.dark-mode h2, body.dark-mode h3 {
   40% { transform: scale(1.3); }
   100% { transform: scale(1); }
 }
+
+
+/* ============================================
+   SAFEFORK IA - CHATBOT
+   Mobile First | Acessibilidade | WebGPU
+   ============================================ */
+
+#tela-chatbot {
+  padding-bottom: 16px;
+}
+
+.ia-cabecalho .section-title {
+  font-size: 1.5rem;
+  margin-bottom: 6px;
+}
+
+.ia-cabecalho p {
+  color: var(--grao);
+  line-height: 1.5;
+}
+
+/* Status da inteligência artificial */
+
+.ia-status {
+  background: rgba(212, 224, 155, 0.35);
+  color: var(--rabanete);
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+
+/* Área da conversa */
+
+.ia-mensagens {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-height: 160px;
+  max-height: 45vh;
+  overflow-y: auto;
+  padding: 4px;
+  margin-bottom: 18px;
+  overscroll-behavior: contain;
+  scroll-behavior: smooth;
+}
+
+/* Balões de mensagens */
+
+.ia-mensagem {
+  padding: 16px;
+  border-radius: 18px;
+  font-size: 0.9rem;
+  line-height: 1.65;
+  max-width: 92%;
+  overflow-wrap: anywhere;
+}
+
+.ia-mensagem strong {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 0.85rem;
+}
+
+.ia-mensagem p + p {
+  margin-top: 10px;
+}
+
+/* Mensagem do assistente */
+
+.ia-assistente {
+  align-self: flex-start;
+  background: var(--branco);
+  color: var(--grao);
+  border-top-left-radius: 4px;
+  box-shadow: 0 2px 10px var(--sombra);
+}
+
+.ia-assistente strong {
+  color: var(--rabanete);
+}
+
+/* Mensagem do usuário */
+
+.ia-usuario {
+  align-self: flex-end;
+  background: #364329;
+  color: #ffffff;
+  border-top-right-radius: 4px;
+}
+
+/* Fonte das informações */
+
+.ia-fonte {
+  display: block;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(128, 128, 128, 0.25);
+  font-size: 0.75rem;
+  color: var(--grao);
+}
+
+.ia-fonte a {
+  color: var(--rabanete);
+  text-decoration: underline;
+}
+
+/* Sugestões de perguntas */
+
+.ia-sugestoes {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.ia-sugestoes h3 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.ia-sugestao {
+  width: 100%;
+  min-height: 52px;
+  padding: 10px 14px;
+  background: rgba(212, 224, 155, 0.35);
+  border: 1px solid rgba(128, 128, 128, 0.25);
+  border-radius: 14px;
+  color: var(--rabanete);
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.82rem;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.ia-sugestao:not(:disabled):active {
+  background: var(--abacate);
+  color: #364329;
+}
+
+/* Formulário de uma linha */
+
+.ia-form {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  margin-top: 12px;
+}
+
+.ia-form .input {
+  flex: 1;
+  min-width: 0;
+  width: auto;
+  min-height: 54px;
+  font-size: 1rem;
+  padding: 12px 14px;
+}
+
+/* Botão enviar */
+
+.ia-enviar {
+  flex: 0 0 54px;
+  width: 54px;
+  height: 54px;
+  min-width: 54px;
+  min-height: 54px;
+  padding: 0;
+  background: #364329;
+  color: #ffffff;
+  border-radius: 14px;
+  font-size: 1.3rem;
+}
+
+/* Botão limpar conversa */
+
+#ia-limpar {
+  margin-top: 12px;
+  min-height: 52px;
+  font-size: 0.85rem;
+  border: 1px solid rgba(128, 128, 128, 0.3);
+  background: var(--branco);
+  color: var(--grao);
+}
+
+/* Aviso de segurança alimentar */
+
+.ia-aviso {
+  background: rgba(224, 122, 95, 0.12);
+  border-left: 3px solid var(--pimentao);
+  border-radius: 8px;
+  padding: 12px;
+  margin-top: 16px;
+  font-size: 0.75rem;
+  line-height: 1.6;
+  color: var(--grao);
+}
+
+/* Controles desabilitados durante carregamento */
+
+#tela-chatbot button:disabled,
+#tela-chatbot input:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+/* Acessibilidade por teclado */
+
+#tela-chatbot button:focus-visible,
+#tela-chatbot input:focus-visible {
+  outline: 3px solid var(--pimentao);
+  outline-offset: 3px;
+}
+
+/* Compatibilidade com modo escuro */
+
+body.dark-mode .ia-assistente {
+  background: #1e2a3a;
+  color: #e0e0e0;
+}
+
+body.dark-mode .ia-status,
+body.dark-mode .ia-sugestao {
+  background: rgba(212, 224, 155, 0.12);
+  color: #d4e09b;
+}
+
+body.dark-mode .ia-usuario {
+  background: #d4e09b;
+  color: #364329;
+}
+
+body.dark-mode .ia-enviar {
+  background: #d4e09b;
+  color: #364329;
+}
+
+/* ============================================
+   MENU INFERIOR - AJUSTE PARA 6 BOTÕES
+   ============================================ */
+
+#bottom-nav {
+  justify-content: space-between;
+  gap: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#bottom-nav .nav-item {
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 56px;
+  padding: 8px 2px;
+  font-size: 0.65rem;
+  gap: 5px;
+}
+
+#bottom-nav .nav-icon {
+  font-size: 1.35rem;
+}
+
+/* Ajuste para celulares menores */
+
+@media (max-width: 360px) {
+  #bottom-nav .nav-item {
+    font-size: 0.60rem;
+  }
+
+  #bottom-nav .nav-icon {
+    font-size: 1.2rem;
+  }
+
+  .ia-mensagem {
+    max-width: 96%;
+  }
+
+  .ia-form {
+    gap: 6px;
+  }
+}
