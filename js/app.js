@@ -453,24 +453,179 @@ const app = {
     container.innerHTML = receitas.map(r => this.cardReceita(r)).join('');
   },
 
+   
+  // Normalizar textos para comparação de ingredientes
+  normalizarTexto(texto) {
+    return String(texto || '')
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9]+/g, ' ')
+      .trim();
+  },
+
+  // Identificar possíveis alergênicos nos ingredientes
+  identificarAlergenos(idReceita) {
+    const ingredientes = this.dados.receitaIngredientes
+      .filter(ri => ri.id_receita === idReceita)
+      .map(ri => {
+        const ingrediente = this.dados.ingredientes.find(
+          i => i.id === ri.id_ingrediente
+        );
+
+        return ingrediente ? ingrediente.nome : '';
+      })
+      .filter(Boolean);
+
+    const mapaAlergenos = {
+      'gluten': [
+        'trigo', 'cevada', 'centeio', 'malte',
+        'farinha de trigo', 'farinha de rosca',
+        'aveia', 'gluten'
+      ],
+
+      'lactose': [
+        'leite', 'leite em po', 'queijo',
+        'manteiga', 'creme de leite', 'iogurte',
+        'requeijao', 'leite condensado', 'lactose'
+      ],
+
+      'amendoim': [
+        'amendoim', 'pacoca',
+        'pasta de amendoim'
+      ],
+
+      'frutos do mar': [
+        'camarao', 'camaroes', 'caranguejo',
+        'lagosta', 'siri', 'ostra', 'ostras',
+        'mexilhao', 'mexilhoes', 'lula', 'polvo'
+      ],
+
+      'ovo': [
+        'ovo', 'ovos', 'gema', 'gemas',
+        'clara de ovo', 'albumina', 'maionese'
+      ],
+
+      'soja': [
+        'soja', 'tofu', 'shoyu',
+        'proteina de soja', 'lecitina de soja'
+      ],
+
+      'castanhas': [
+        'castanha', 'castanhas', 'noz', 'nozes',
+        'amendoa', 'amendoas', 'avela',
+        'avelas', 'pistache', 'macadamia',
+        'castanha do para', 'castanha de caju'
+      ],
+
+      'trigo': [
+        'trigo', 'farinha de trigo',
+        'semolina', 'triguilho', 'bulgur'
+      ]
+    };
+
+    const encontrados = new Set();
+
+    ingredientes.forEach(nome => {
+      const texto = this.normalizarTexto(nome);
+
+      Object.entries(mapaAlergenos).forEach(
+        ([alergeno, palavras]) => {
+
+          // Evitar confundir bebidas vegetais com leite animal
+          if (
+            alergeno === 'lactose' &&
+            /^(leite|bebida) (de |do )?(coco|soja|aveia|arroz|amendoa|amendoas|castanha|castanhas|vegetal)$/.test(texto)
+          ) {
+            return;
+          }
+
+          const possuiAlergeno = palavras.some(palavra => {
+            return (' ' + texto + ' ').includes(
+              ' ' + palavra + ' '
+            );
+          });
+
+          if (possuiAlergeno) {
+            encontrados.add(alergeno);
+          }
+        }
+      );
+    });
+
+    return Array.from(encontrados);
+  },
+
+  // Comparar alergênicos com as restrições selecionadas
+  verificarRiscosReceita(idReceita, idsAlergias = []) {
+    const alergenos = this.identificarAlergenos(idReceita);
+
+    return this.dados.alergias
+      .filter(a => idsAlergias.includes(a.id))
+      .filter(a => {
+        return alergenos.includes(
+          this.normalizarTexto(a.nome)
+        );
+      })
+      .map(a => a.nome);
+  },
+
+  // Obter restrições cadastradas pelo usuário
+  obterAlergiasUsuario() {
+    if (!this.usuarioAtual) return [];
+
+    return this.dados.usuarioAlergias
+      .filter(ua => ua.id_usuario === this.usuarioAtual.id)
+      .map(ua => ua.id_alergia);
+  },
+
+
   cardReceita(r) {
     const autor = this.dados.usuarios.find(u => u.id === r.id_usuario);
     const curtido = r.curtidas.includes(this.usuarioAtual.id);
-    const alergiasUsuario = this.dados.usuarioAlergias
-      .filter(ua => ua.id_usuario === this.usuarioAtual.id)
-      .map(ua => this.dados.alergias.find(a => a.id === ua.id_alergia)?.nome.toLowerCase());
+   
+    const alergiasUsuario = this.obterAlergiasUsuario();
+
+    const riscos = this.verificarRiscosReceita(
+      r.id,
+      alergiasUsuario
+    );
 
     let alerta = '';
-    const tagsRisco = r.categorias.filter(c => {
-      const map = { 'sem-gluten': 'glúten', 'sem-lactose': 'lactose', 'sem-nozes': 'amendoim', 'sem-ovo': 'ovo' };
-      return alergiasUsuario.includes(map[c]);
-    });
 
-    if (tagsRisco.length > 0) {
-      alerta = `<div style="background:rgba(224,122,95,0.15); color:var(--pimentao); padding:8px 12px; border-radius:10px; font-size:0.8rem; font-weight:600; margin-top:10px;">
-        ⚠️ Contém ingredientes relacionados às suas alergias
-      </div>`;
+    if (riscos.length > 0) {
+      alerta = `
+        <div style="
+          background:rgba(224,122,95,0.15);
+          border:1px solid #a03d27;
+          color:inherit;
+          padding:10px 12px;
+          border-radius:10px;
+          font-size:0.85rem;
+          font-weight:600;
+          margin-top:10px;
+        ">
+          ⚠️ Atenção: possível presença de alergênicos
+          relacionados às suas restrições.
+          <br>
+          Confira os ingredientes e os rótulos.
+        </div>`;
+    } else if (alergiasUsuario.length > 0) {
+      alerta = `
+        <div style="
+          background:rgba(128,128,128,0.10);
+          color:inherit;
+          padding:10px 12px;
+          border-radius:10px;
+          font-size:0.8rem;
+          margin-top:10px;
+        ">
+          ℹ️ Nenhum conflito identificado na análise
+          dos ingredientes cadastrados.
+          Confira os rótulos antes do consumo.
+        </div>`;
     }
+
 
     return `<div class="receita-card" onclick="app.verReceita(${r.id})">
       <div class="receita-img">${r.imagem}
