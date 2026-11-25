@@ -400,6 +400,16 @@ const app = {
 
     this.telaAtual = tela;
 
+    // Exibir Nova no menu inferior somente na IA
+    const botaoNovaMenu = document.querySelector(
+      '#bottom-nav button[onclick*="cadastrar-receita"]'
+    );
+
+    if (botaoNovaMenu) {
+      botaoNovaMenu.style.display =
+        tela === 'ia' ? '' : 'none';
+    }
+
     // Ocultar botão flutuante na tela do chatbot
     const fab = document.getElementById('fab');
 
