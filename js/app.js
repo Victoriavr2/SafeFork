@@ -1417,4 +1417,78 @@ const app = {
 };
 
 // Iniciar app
-document.addEventListener('DOMContentLoaded', () => app.init());
+
+// Iniciar app
+document.addEventListener('DOMContentLoaded', () => {
+  app.init();
+
+  // Gesto de navegação: Swipe to Back
+  const conteudo = document.getElementById('content');
+
+  if (!conteudo) return;
+
+  let inicioX = 0;
+  let inicioY = 0;
+  let gestoAtivo = false;
+
+  conteudo.addEventListener('touchstart', (e) => {
+    gestoAtivo = false;
+
+    // Funciona somente com usuário autenticado
+    if (!app.usuarioAtual) return;
+
+    // Evita interferência com o zoom
+    if (e.touches.length !== 1) return;
+
+    // Protege o formulário de nova receita
+    if (app.telaAtual === 'cadastrar-receita') return;
+
+    // Evita conflitos com botões e outros gestos
+    if (e.target.closest(
+      'button, input, textarea, select, label, a, ' +
+      '.dyn-item, .swipe-confirm-container, ' +
+      '#swipe-confirm-box, .scroll-x, .chips-container'
+    )) return;
+
+    inicioX = e.touches[0].clientX;
+    inicioY = e.touches[0].clientY;
+
+    // O gesto deve começar na lateral esquerda
+    gestoAtivo = inicioX <= 35;
+
+  }, { passive: true });
+
+  conteudo.addEventListener('touchmove', (e) => {
+    if (e.touches.length !== 1) {
+      gestoAtivo = false;
+    }
+  }, { passive: true });
+
+  conteudo.addEventListener('touchend', (e) => {
+    if (!gestoAtivo) return;
+
+    gestoAtivo = false;
+
+    if (!app.usuarioAtual) return;
+
+    const fimX = e.changedTouches[0].clientX;
+    const fimY = e.changedTouches[0].clientY;
+
+    const distanciaX = fimX - inicioX;
+    const distanciaY = Math.abs(fimY - inicioY);
+
+    if (
+      distanciaX > 100 &&
+      distanciaY < 60 &&
+      app.historico.length > 0 &&
+      app.telaAtual !== 'cadastrar-receita'
+    ) {
+      app.voltar();
+    }
+
+  }, { passive: true });
+
+  conteudo.addEventListener('touchcancel', () => {
+    gestoAtivo = false;
+  });
+});
