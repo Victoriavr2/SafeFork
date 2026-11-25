@@ -393,8 +393,11 @@ const app = {
   },
 
   // Navegação
-  irPara(tela) {
-    this.historico.push(this.telaAtual);
+  irPara(tela, registrarHistorico = true) {
+    if (registrarHistorico && this.telaAtual !== tela) {
+      this.historico.push(this.telaAtual);
+    }
+
     this.telaAtual = tela;
 
     document.querySelectorAll('.tela').forEach(el => el.style.display = 'none');
@@ -419,13 +422,16 @@ const app = {
     if (tela === 'busca') this.renderizarAlergiasBusca();
     if (tela === 'cadastrar-receita') this.iniciarFormularioReceita();
 
+    const conteudo = document.getElementById('content');
+    if (conteudo) conteudo.scrollTop = 0;
     window.scrollTo(0, 0);
   },
 
   voltar() {
     const anterior = this.historico.pop() || 'feed';
-    this.irPara(anterior);
+    this.irPara(anterior, false);
   },
+
 
   fabAction() {
     this.irPara('cadastrar-receita');
