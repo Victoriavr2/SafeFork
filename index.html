@@ -143,14 +143,29 @@
         <div class="logo-icon">🛡️</div>
         <h1>SafeFork</h1>
       </div>
-      <div class="header-actions">
-        <button class="btn btn-ghost" style="padding:8px 12px; min-height:40px;" onclick="app.irPara('notificacoes')">
-          🔔
-        </button>
-        <button class="btn btn-ghost" style="padding:8px 12px; min-height:40px;" onclick="app.irPara('configuracoes')">
-          ⚙️
-        </button>
-      </div>
+      
+<div class="header-actions">
+
+  <button
+    type="button"
+    class="btn btn-ghost"
+    style="padding:8px 12px; min-height:48px;"
+    aria-label="Abrir notificações"
+    onclick="app.irPara('notificacoes')">
+    <span aria-hidden="true">🔔</span>
+  </button>
+
+  <button
+    type="button"
+    class="btn btn-ghost"
+    style="padding:8px 12px; min-height:48px;"
+    aria-label="Abrir configurações"
+    onclick="app.irPara('configuracoes')">
+    <span aria-hidden="true">⚙️</span>
+  </button>
+
+</div>
+
     </header>
 
     <!-- CONTEÚDO PRINCIPAL -->
